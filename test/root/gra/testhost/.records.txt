@@ -1,0 +1,2 @@
+_key:_eth0	ifDescr:eth0	ifAlias:testdescr	ifSpeed:1000000000
+_key:l1	laLoad:0.01	laNames:Load-1

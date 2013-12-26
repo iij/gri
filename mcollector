@@ -1,0 +1,47 @@
+# coding: us-ascii
+
+if Object.const_defined? :RUBY_VERSION
+  lib_dir = File.dirname(__FILE__) + '/lib'
+  $LOAD_PATH.push lib_dir
+  require 'rubygems'
+  require 'socket'
+else
+  # mruby
+  GC.disable #XXX
+  lib_dir = File.dirname(__FILE__) + '/lib'
+  $LOAD_PATH.push lib_dir
+end
+
+require 'gri/mlog'
+require 'gri/app_collector'
+require 'gri/writer'
+require 'gri/config'
+require 'gri/builtindefs'
+require 'gri/plugin'
+
+config_path = '/usr/local/gri/gri.conf'
+gritab_path = nil
+wtype = nil
+while arg = ARGV.shift
+  case arg
+  when /\A--debug/
+    $debug = true
+  when /\A--config-path(?:=(\w+))?/
+    config_path = ($1 || ARGV.shift)
+  when /\A--gritab-path(?:=(\w+))?/
+    gritab_path = ($1 || ARGV.shift)
+  when /\A--writer(?:=(\w+))?/
+    wtype = ($1 || ARGV.shift)
+  end
+end
+
+config = GRI::Config.init config_path
+config['gritab-path'] = gritab_path if gritab_path
+GRI::Plugin.load_plugins [], config
+config['root-dir'] ||= GRI::Config::ROOT_PATH
+config['tra-dir'] ||= '/usr/local/gri/tra'
+wtype ||= 'fluent'
+writer = GRI::Writer.create wtype, config.to_h
+app = GRI::AppCollector.new(config)
+app.writers.push writer
+app.run

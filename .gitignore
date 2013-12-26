@@ -1,0 +1,7 @@
+*~
+.ruby-version
+.lu_*
+test/.t
+coverage/
+pkg/
+tmp/

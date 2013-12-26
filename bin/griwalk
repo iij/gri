@@ -1,0 +1,9 @@
+#! /usr/bin/env ruby
+
+require 'gri/main'
+require 'gri/app_walker'
+
+main = GRI::Main.new
+main.config['walker'] = true
+main.run
+

@@ -1,0 +1,9 @@
+# gritab for test
+localhost       ver=2c community=public no-interfaces
+host00          interval=3600
+host01          interval=60
+host02          interval=10
+host03          interval=12
+host04          interval=60
+host05          interval=10
+host06          interval=180

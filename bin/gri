@@ -1,0 +1,5 @@
+#! /usr/bin/env ruby
+
+require 'gri/main'
+
+GRI::Main.new.run
