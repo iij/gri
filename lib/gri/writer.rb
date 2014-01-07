@@ -83,6 +83,7 @@ module GRI
       unless @sysinfos.empty?
         if @options[:merge_p]
           path = "#{@gra_dir}/.sysdb/sysdb.tmp.#{$$}"
+          FileUtils.mkdir_p File.dirname(path) unless File.exist? path
           open(path, 'w') {|f| LTSV.dump_to_io @sysinfos, f}
         else
           path = "#{@gra_dir}/.sysdb/sysdb.txt"
