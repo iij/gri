@@ -166,6 +166,7 @@ module GRI
     def call env
       req = GRI::Request.new env
       params = req.gparams
+      ENV['TZ'] = Config['tz'] if Config['tz']
       ENV['TZ'] = params['tz'].to_s unless params['tz'].blank?
       stime, etime = req.params['stime'].to_i, req.params['etime'].to_i
       etime = (Time.now + etime).to_i if etime <= 0

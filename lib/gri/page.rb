@@ -153,6 +153,7 @@ module GRI
 
     def call env
       req = GRI::Request.new env
+      ENV['TZ'] = Config['tz'] if Config['tz']
       ENV['TZ'] = req.params['tz'].to_s unless req.params['tz'].blank?
       stime, etime, params = parse_request req
 
