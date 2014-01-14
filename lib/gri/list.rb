@@ -74,7 +74,7 @@ module GRI
       sysdb = {}
       for dir in dirs
         values = LTSV.load_from_file(dir + '/.sysdb/sysdb.txt')
-        values.inject(sysdb) {|h, v| h[v['_host']] = v; h}
+        values.inject(sysdb) {|h, v| v['_host'] and (h[v['_host']] = v); h}
       end
       sysdb
     end
