@@ -154,6 +154,8 @@ module GRI
 
     'hrStorage'=>{
       :oid=>['hrStorageEntry'],
+      :exclude? => proc {|record| record['hrStorageDescr'] =~ /devicemapper/},
+      :hidden? => proc {|record| record['hrStorageDescr'] =~ /devicemapper/},
       :tdb=>['hrStorage', 'hrStorageDescr', 'hrStorageSize', 'hrStorageUsed'],
       :fix_workhash=>lambda {|wh|
         if (h = wh[:hrStorage])
