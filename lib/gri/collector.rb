@@ -122,6 +122,7 @@ module GRI
           for cat, wh in @workhash
             (specs = DEFS.get_specs cat) and
               (index_key = specs[:index_key] || specs[:named_index])
+            ign_proc = specs[:ignore?]
             for ind, h in wh
               h['_host'] = @hostname || host
               h['_key'] = if index_key
@@ -141,6 +142,7 @@ module GRI
                 h[descr_k] = f_descr
               end
               puts "  record #{h.inspect}" if h['_d']
+              next if ign_proc and ign_proc.call(h)
               records.push h
             end
           end
