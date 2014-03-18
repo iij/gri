@@ -106,6 +106,7 @@ module GRI
 
           @workhash[:interfaces] = @workhash[''] #
           for pu in punits_d
+            pu.options = vendor.options
             join_cat, join_key = pu.defs[:join]
             if join_cat
               for cat, wh in @workhash[pu.cat]

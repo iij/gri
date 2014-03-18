@@ -3,7 +3,7 @@ module GRI
     UNITS = {}
 
     attr_reader :name, :cat, :oids
-    attr_accessor :dhash
+    attr_accessor :dhash, :options
     alias :defs :dhash
 
     def self.all_units
@@ -13,8 +13,8 @@ module GRI
           pucat = dhash[:cat] || dhash[:pucat] ||
             (dhash[:tdb] and dhash[:tdb].first.intern) || name.intern
           puclass = dhash[:puclass]
-          if puclass and Object.const_defined?(puclass + 'PollingUnit')
-            klass = eval(puclass + 'PollingUnit')
+          if puclass and GRI.const_defined?("#{puclass}PollingUnit")
+            klass = eval("#{puclass}PollingUnit")
           else
             klass = self
           end
@@ -31,6 +31,7 @@ module GRI
     def initialize name, cat
       @name = name
       @cat = cat
+      @options = {}
       @d_p = false
     end
 
@@ -83,6 +84,31 @@ module GRI
 
     def inspect
       "#<PU:#{@name}>"
+    end
+  end
+
+  class HRSWRunPerfPollingUnit < PollingUnit
+    def fix_workhash workhash
+      re = (pat = options['hrSWRunPerf']) ? Regexp.new(pat) : nil
+      wh2 = {}
+      if (wh = workhash[:hrSWRunPerf])
+        del_keys = []
+        for k, v in wh
+          sw = "#{v['hrSWRunPath']} #{v['hrSWRunParameters']}"
+          if re =~ sw
+            matched = $&
+            idx = matched.gsub(/[\s\/]/, '_').gsub(/[^\w]/, '') #/
+            h = (wh2[idx] ||= {})
+            h['hrSWRunPerfMatched'] = matched
+            h['hrSWRunPerfMem'] ||= 0
+            h['hrSWRunPerfMem'] += v['hrSWRunPerfMem'].to_i * 1024
+            h['hrSWRunPerfCPU'] ||= 0
+            h['hrSWRunPerfCPU'] += v['hrSWRunPerfCPU'].to_i
+          end
+        end
+        workhash[:hrSWRunPerf] = wh2
+      end
+      super
     end
   end
 end

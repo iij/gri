@@ -179,6 +179,22 @@ module GRI
       :composite=>['s', 'v', 't'],
     },
 
+    'hrSWRunPerf'=>{
+      :puclass=>'HRSWRunPerf',
+      :oid=>['hrSWRunPath', 'hrSWRunParameters',
+        'hrSWRunPerfCPU', 'hrSWRunPerfMem'],
+      :tdb=>['hrSWRunPerf', 'name', 'hrSWRunPerfCPU', 'hrSWRunPerfMem'],
+      :ds=>['hrSWRunPerfMem,mem,GAUGE,MAX,AREA,#40ff40',
+        'hrSWRunPerfCPU,cputime,DERIVE,MAX,LINE1,#4444ff,,300',],
+      :prop=>{:name=>'hrSWRunPerfMatched',
+        :lastvalue=>'hrSWRunPerfMem', :cputime=>'hrSWRunPerfCPU'},
+      :list=>['RunPerf', '%N,%1024L\r'],
+      :composite=>['s', 'v', 't'],
+      :graph=>[['mem', 1024, nil, /mem/],
+        ['centisecond', 0, [0, nil], /cputime/]
+      ],
+    },
+
     :term => {
       :default=>[['Daily', 30*3600], ['Weekly', 8*24*3600],
         ['Monthly', 31*24*3600], ['Yearly', 365*24*3600]],
