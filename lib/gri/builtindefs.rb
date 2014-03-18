@@ -24,6 +24,8 @@ module GRI
         'ifInUcastPkts', 'ifOutUcastPkts',
         'ifInNUcastPkts', 'ifOutNUcastPkts',],
       :index_key => 'ifDescr',
+      :ignore? => proc {|record|
+        /(^(Loopback|Null|Async)\d+)|cef layer|atm subif/ === record['ifDescr']},
       :exclude? => proc {|record|
         record['ifOperStatus'].to_i != 1 or
           record['ifSpeed'].to_i == 0 or
@@ -201,7 +203,7 @@ module GRI
             k.gsub(/-/, '')
           spec = (@specs[data_name.to_s] ||= {})
           [:list, :index_key, :named_index, :tdb, :ds, :rra, :prop,
-            :graph, :composite, :exclude?, :hidden?].each {|symkey|
+            :graph, :composite, :ignore?, :exclude?, :hidden?].each {|symkey|
             spec[symkey] = dhash[symkey] if dhash[symkey]
           }
           spec[:list] ||= dhash[:list_text] #XXX
