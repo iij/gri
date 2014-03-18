@@ -14,9 +14,9 @@ module GRI
     def initialize
       root_dir = Config['root-dir'] ||= Config::ROOT_PATH
       log_dir = Config['log-dir'] || Config['root-dir'] + '/log'
-      Log.init "#{log_dir}/#{File.basename $0}.log"
+      Log.init "#{log_dir}/#{File.basename $0}.log", :no_dash=>true
     rescue SystemCallError
-      Log.init '/tmp/grapher.log'
+      Log.init '/tmp/grapher.log', :no_dash=>true
     end
 
     def call env

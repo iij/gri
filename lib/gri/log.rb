@@ -36,7 +36,7 @@ module Log
     shift_size = options[:log_shift_size] || 100_000_000
     logger = Logger.new logdev, shift_age, shift_size
     logger.formatter = Log::Formatter.new
-    logger.add Logger::INFO, '-'
+    logger.add Logger::INFO, '-' unless options[:no_dash]
     logger = Logger.new logdev
     logger.formatter = Log::Formatter.new
     logger.level = {'fatal'=>Logger::FATAL, 'error'=>Logger::ERROR,
