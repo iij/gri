@@ -213,7 +213,7 @@ module GRI
       rrdpaths, total_ub = get_rrdpaths_and_ub rnames
 
       args = []
-      if total_ub > 0
+      if total_ub > 0 and (params['p'] != 'v')
         args.push "-u #{total_ub} --alt-autoscale-max" if params['y'] == 'u'
         args.push "HRULE:#{total_ub}#ff0000"
       end
