@@ -24,6 +24,8 @@ module GRI
         'ifInUcastPkts', 'ifOutUcastPkts',
         'ifInNUcastPkts', 'ifOutNUcastPkts',],
       :index_key => 'ifDescr',
+      :ignore? => proc {|record|
+        /(^(Loopback|Null|Async)\d+)|cef layer|atm subif/ === record['ifDescr']},
       :exclude? => proc {|record|
         record['ifOperStatus'].to_i != 1 or
           record['ifSpeed'].to_i == 0 or
@@ -177,6 +179,22 @@ module GRI
       :composite=>['s', 'v', 't'],
     },
 
+    'hrSWRunPerf'=>{
+      :puclass=>'HRSWRunPerf',
+      :oid=>['hrSWRunPath', 'hrSWRunParameters',
+        'hrSWRunPerfCPU', 'hrSWRunPerfMem'],
+      :tdb=>['hrSWRunPerf', 'name', 'hrSWRunPerfCPU', 'hrSWRunPerfMem'],
+      :ds=>['hrSWRunPerfMem,mem,GAUGE,MAX,AREA,#40ff40',
+        'hrSWRunPerfCPU,cputime,DERIVE,MAX,LINE1,#4444ff,,300',],
+      :prop=>{:name=>'hrSWRunPerfMatched',
+        :lastvalue=>'hrSWRunPerfMem', :cputime=>'hrSWRunPerfCPU'},
+      :list=>['RunPerf', '%N,%1024L\r'],
+      :composite=>['s', 'v', 't'],
+      :graph=>[['mem', 1024, nil, /mem/],
+        ['centisecond', 0, [0, nil], /cputime/]
+      ],
+    },
+
     :term => {
       :default=>[['Daily', 30*3600], ['Weekly', 8*24*3600],
         ['Monthly', 31*24*3600], ['Yearly', 365*24*3600]],
@@ -201,7 +219,7 @@ module GRI
             k.gsub(/-/, '')
           spec = (@specs[data_name.to_s] ||= {})
           [:list, :index_key, :named_index, :tdb, :ds, :rra, :prop,
-            :graph, :composite, :exclude?, :hidden?].each {|symkey|
+            :graph, :composite, :ignore?, :exclude?, :hidden?].each {|symkey|
             spec[symkey] = dhash[symkey] if dhash[symkey]
           }
           spec[:list] ||= dhash[:list_text] #XXX

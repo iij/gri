@@ -128,8 +128,12 @@ GRI::DEFS.update 'ucd-la'=>{:cat=>:l,
   'ucd-diskio'=>{:cat=>:diskio, :puclass=>'UCDDiskIO',
   :oid=>['diskIODevice', 'diskIOReads', 'diskIOWrites',
     'diskIONReadX', 'diskIONWrittenX'],
-  :exclude? => proc {|record| record['diskIODevice'] =~ /^(loop|ram|dm-)/},
-  :hidden? => proc {|record| record['diskIODevice'] =~ /^(loop|ram|dm-)/},
+  :ignore? => proc {|record|
+    record['diskIODevice'] =~ /^(diskIODevice|loop|ram|dm-)/ or
+      !(record['diskIODevice'])},
+  #:exclude? => proc {|record| record['diskIODevice'] =~ /^(loop|ram|dm-)/},
+  :hidden? => proc {|record|
+    record['diskIODevice'] =~ /^(diskIODevice|loop|ram|dm-)/},
   :tdb=>['diskIO', 'diskIODevice', 'diskIOReads', 'diskIOWrites',
     'diskIONReadX', 'diskIONWrittenX'],
   :ds=>['diskIOReads,reads,DERIVE,MAX,AREA,#90f090',
