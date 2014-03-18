@@ -32,6 +32,7 @@ module GRI
         if vymd >= ymd
           rtime = Time.local(vymd[0, 4], vymd[4, 2], vymd[6, 2])
           open(ymd_file, 'rb') {|f|
+            pos = 0 if f.stat.size < pos
             f.pos = pos
             while line = f.gets
               pos += line.size
