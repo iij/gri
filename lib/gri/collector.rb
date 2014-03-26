@@ -172,9 +172,9 @@ module GRI
         cb.call
       else
         pu = punits.shift
-        puts "  poll #{host} #{pu.name}" if $debug
         @get_oid_buf = []
         oids = pu.oids.dup
+        puts "  poll #{host} #{pu.name}" if $debug
         walk1(pu, oids) {poll1 punits, &cb}
       end
     end
