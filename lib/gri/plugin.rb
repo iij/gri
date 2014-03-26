@@ -4,8 +4,7 @@ module GRI
 
     def load_plugins dirs=[], config=nil
       @loaded = {}
-      dirs += get_gem_dirs
-      dirs.push File.join(File.dirname(__FILE__), 'plugin')
+      dirs = [File.join(File.dirname(__FILE__), 'plugin')] + get_gem_dirs + dirs
       dirs.each {|dir| load_plugin_dir dir, config}
     end
 
