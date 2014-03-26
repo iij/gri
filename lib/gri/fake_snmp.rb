@@ -62,7 +62,7 @@ module GRI
       @get_buf = []
       for k, v in @lines
         if k.index(enoid) == 0
-          @get_buf.push [enoid, v[0], v[1]]
+          @get_buf.push [k, v[0], v[1]]
         end
       end
     end
