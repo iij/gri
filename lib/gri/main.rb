@@ -87,6 +87,7 @@ module GRI
       op.on('--collector') {opts['collector'] = true}
       op.on('--config-path=PATH') {|arg| opts[:config_path] = arg}
       op.on('--duration=SEC', Integer) {|arg| opts['duration'] = arg}
+      op.on('--fake-snmp=FILE') {|arg| opts['fake_snmp'] = arg}
       op.on('--gritab-path=PATH') {|arg| opts['gritab-path'] = arg}
       op.on('--host-pat=PAT', '-h') {|arg| (opts['host-pat'] ||= []).push arg}
       op.on('--interval=SEC', Integer) {|arg| opts['interval'] = arg}

@@ -77,8 +77,13 @@ module GRI
       @tout = 5
       @preq = nil
       @snmp = SNMP.new(@cname || @host, options['port'])
-      @snmp.version = options['ver'] if options['ver']
-      @snmp.community = options['community'] if options['community']
+      if options['fake-snmp']
+        require 'gri/fake_snmp'
+        @snmp = FakeSNMP.new options['fake-snmp']
+      else
+        @snmp.version = options['ver'] if options['ver']
+        @snmp.community = options['community'] if options['community']
+      end
 
       varbind = SYSOIDS
       get(varbind) {|results|
@@ -227,12 +232,15 @@ module GRI
 
     def send_req arg
       @preq = [@snmp.state, arg]
-      s = @snmp.make_req @snmp.state, arg
-      if @retry_count > 0
-        Log.debug "retry send_req, #{@buffers.size}"
+      if (s = @snmp.make_req(@snmp.state, arg))
+        if @retry_count > 0
+          Log.debug "retry send_req, #{@buffers.size}"
+        end
+        @buffers.push s
+        loop.watch @snmp.sock, :w, @tout, self
+      else
+        on_readable
       end
-      @buffers.push s
-      loop.watch @snmp.sock, :w, @tout, self
     end
 
     def retry
