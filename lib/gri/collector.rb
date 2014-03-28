@@ -95,7 +95,11 @@ module GRI
         sysinfo['sysDescr'] and sysinfo['sysDescr'].gsub!("\n", ' ')
 
         vendor = Vendor.check sysinfo, options
-        puts "snmp: #{host} (#{vendor.name}): #{vendor.options.inspect}" if $debug
+        if $debug
+          puts "snmp: #{host} (#{vendor.name}): #{sysinfo['sysDescr']}"
+          puts vendor.options.inspect
+        end
+
         @snmp.version = vendor.options['ver'] if vendor.options['ver']
         punits = vendor.get_punits
         punits_d = punits.dup
@@ -200,10 +204,21 @@ module GRI
           walk1 pu, oids, &cb
         else
           walk(req_enoid) {|results|
+            show_results req_enoid, results if $debug #and !results.empty?
             results.each {|enoid, tag, val| pu.feed wh, enoid, tag, val}
             walk1 pu, oids, &cb
           }
         end
+      end
+    end
+
+    def show_results req_enoid, results
+      puts "    req #{SNMP.enoid2name req_enoid}"
+      for enoid, tag, val in results
+        a = BER.dec_oid enoid
+        s = a[0..-2].join('.')
+        oid_ind = BER.enc_v_oid s
+        puts "      res #{SNMP.enoid2name(enoid)} #{tag} #{val.inspect}"
       end
     end
 

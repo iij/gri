@@ -471,6 +471,9 @@ class SNMP
   end
 
   def enoid2name enoid
+    SNMP.enoid2name enoid
+  end
+  def self.enoid2name enoid
     a = BER.dec_oid enoid
     n = a.size
     n0 = n
