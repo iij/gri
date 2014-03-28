@@ -126,8 +126,11 @@ module GRI
           @workhash.delete :interfaces #
 
           for cat, wh in @workhash
-            (specs = DEFS.get_specs cat) and
+            if (specs = DEFS.get_specs cat)
               (index_key = specs[:index_key] || specs[:named_index])
+            else
+              specs = {}
+            end
             ign_proc = specs[:ignore?]
             for ind, h in wh
               h['_host'] = @hostname || host
