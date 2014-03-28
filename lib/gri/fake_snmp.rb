@@ -73,7 +73,7 @@ module GRI
 
     def vconv str
       case str
-      when /^INTEGER: (\d+)/
+      when /^INTEGER: ([-\d]+)/
         [0x02, $1.to_i]
       when /^STRING: "(.*)/
         [0x04, $1[0..-2]]
@@ -84,7 +84,7 @@ module GRI
         [0x06, enoid]
       when /^Counter(?:32)?: (\d+)/
         [0x41, $1.to_i]
-      when /^Gauge(?:\d+): (\d+)/
+      when /^Gauge(?:\d+): ([-\d]+)/
         [0x42, $1.to_i]
       when /^Counter64: (\d+)/
         [0x46, $1.to_i]
