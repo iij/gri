@@ -214,7 +214,7 @@ module GRI
         @specs = {}
         for k, dhash in self
           next unless String === k
-          data_name = dhash[:data_name] || dhash[:cat] ||
+          data_name = dhash[:data_name] || dhash[:cat] || dhash[:pucat] ||
             (dhash[:tdb] and dhash[:tdb].first) ||
             k.gsub(/-/, '')
           spec = (@specs[data_name.to_s] ||= {})
