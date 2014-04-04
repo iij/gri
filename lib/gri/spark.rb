@@ -80,7 +80,6 @@ module GRI
       op = OptionParser.new
       op.on('--debug') {$debug = true; STDOUT.sync = true;
         opts['log-level'] = 'debug'}
-      op.on('--Doption=STR') {|arg| (opts['Doption'] ||= []).push arg}
       op.on('-O OPT_STR') {|arg| (opts['O'] ||= []).push arg}
       op.on('-c', '--config-path=PATH') {|arg| opts[:config_path] = arg}
       op.on('--log-level=LEVEL') {|arg| opts['log-level'] = arg}
