@@ -114,6 +114,10 @@ module GRI
           hfdh = @fake_descr_hash[host]
 
           @workhash[:interfaces] = @workhash[''] #
+          if $debug and ($debug['workhash'] or $debug['workhash0'])
+            puts "  workhash0"
+            show_workhash @workhash
+          end
           for pu in punits_d
             pu.options = vendor.options
             join_cat, join_key = pu.defs[:join]
@@ -128,6 +132,10 @@ module GRI
             pu.fix_workhash @workhash
           end
           @workhash.delete :interfaces #
+          if $debug and ($debug['workhash'] or $debug['workhash1'])
+            puts "  workhash1"
+            show_workhash @workhash
+          end
 
           for cat, wh in @workhash
             if (specs = DEFS.get_specs cat)
@@ -204,10 +212,22 @@ module GRI
           walk1 pu, oids, &cb
         else
           walk(req_enoid) {|results|
-            show_results req_enoid, results if $debug #and !results.empty?
+            show_results req_enoid, results if $debug and $debug['walk']
             results.each {|enoid, tag, val| pu.feed wh, enoid, tag, val}
             walk1 pu, oids, &cb
           }
+        end
+      end
+    end
+
+    def show_workhash workhash
+      for cat, wh in workhash
+        puts "    cat: #{cat.inspect}"
+        for ind, h in wh
+          puts "      index: #{ind}"
+          for k, v in h
+            puts "        #{k}: #{v.inspect}"
+          end
         end
       end
     end
