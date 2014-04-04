@@ -25,7 +25,7 @@ module GRI
         }
       end
       vdefs ||= {:name=>'unknown'}
-      Vendor.new vdefs, sysinfo, options
+      self.new vdefs, sysinfo, options
     end
 
     def initialize vdefs, sysinfo, options
