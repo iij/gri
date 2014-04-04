@@ -78,9 +78,10 @@ module GRI
 
     def optparse opts
       op = OptionParser.new
-      op.on('--debug') {$debug = true; STDOUT.sync = true;
+      op.on('--debug [FLAGS]', String) {|arg| STDOUT.sync = true
+        a = (arg || '').split(/,/)
+        $debug = Hash[*(a.zip([true]*a.size).flatten)]
         opts['log-level'] = 'debug'}
-      op.on('--Doption=STR') {|arg| (opts['Doption'] ||= []).push arg}
 
       op.on('--add-writer=WRITER') {|arg| (opts['writers'] ||= []).push arg}
       op.on('-O OPT_STR') {|arg| (opts['O'] ||= []).push arg}
