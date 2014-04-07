@@ -129,6 +129,7 @@ module GRI
                 end
               end
             end
+            puts "  fix_workhash #{pu.class} #{pu.name}" if $debug
             pu.fix_workhash @workhash
           end
           @workhash.delete :interfaces #
