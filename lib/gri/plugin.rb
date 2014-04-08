@@ -48,13 +48,14 @@ module GRI
         if defined?(::Gem::Specification) and
             Gem::Specification.respond_to?(:find_all)
           specs = Gem::Specification.find_all {|spec|
-            spec.full_require_paths.map {|path|
-              File.directory?(path + '/gri/plugin')}.any?
+            spec.require_paths.map {|path|
+              File.directory?("#{spec.gem_dir}/#{path}/gri/plugin")}.any?
           }.sort_by {|spec| spec.version}.reverse
           names = {}
           specs.each {|spec| names[spec.name] ||= spec}
           names.values.each {|spec|
-            dirs += spec.full_require_paths.map {|path| path + '/gri/plugin'}
+            dirs += spec.require_paths.map {|path|
+              "#{spec.gem_dir}/#{path}/gri/plugin"}
           }
         elsif Gem.respond_to?(:searcher)
           specs = Gem.searcher.find_all 'gri/plugin/*.rb'
