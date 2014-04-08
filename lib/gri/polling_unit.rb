@@ -12,11 +12,12 @@ module GRI
           next unless String === name
           pucat = dhash[:cat] || dhash[:pucat] ||
             (dhash[:tdb] and dhash[:tdb].first.intern) || name.intern
-          puclass = dhash[:puclass]
-          if puclass and GRI.const_defined?("#{puclass}PollingUnit")
-            klass = eval("#{puclass}PollingUnit")
-          else
-            klass = self
+          klass = self
+          if (puclass = dhash[:puclass])
+            if GRI.const_defined?("#{puclass}PollingUnit") or 
+                Object.const_defined?("#{puclass}PollingUnit")
+              klass = eval("#{puclass}PollingUnit")
+            end
           end
           pu = klass.new name, pucat
           pu.dhash = dhash
