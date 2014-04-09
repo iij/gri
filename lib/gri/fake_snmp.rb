@@ -73,7 +73,7 @@ module GRI
 
     def vconv str
       case str
-      when /^INTEGER: ([-\d]+)/
+      when /^INTEGER: (?:\w+\()?([-\d]+)/
         [0x02, $1.to_i]
       when /^STRING: "(.*)/
         [0x04, $1[0..-2]]
