@@ -27,7 +27,7 @@ class TestCollector < Test::Unit::TestCase
     "\x7F\xC9i\xA10\"\x06\b+\x06\x01\x02\x01\x01\x06\x00" +
     "\x04\x16xxxxx xxxx, xxxxx xxx."
 
-  def test_snmp_collecotr
+  def test_snmp_collector
     c = Collector.create('snmp', 'testhost', {}) {|records|}
     snmp = MockSNMP.new 'testhost'
     c.instance_eval {
