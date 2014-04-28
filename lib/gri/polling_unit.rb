@@ -3,7 +3,7 @@ module GRI
     UNITS = {}
 
     attr_reader :name, :cat, :oids
-    attr_accessor :dhash, :options
+    attr_accessor :dhash, :ophash, :options
     alias :defs :dhash
 
     def self.all_units
@@ -22,6 +22,15 @@ module GRI
           pu = klass.new name, pucat
           pu.dhash = dhash
           pu.set_oids dhash[:oid]
+          if dhash[:tdb]
+            dhash[:tdb].each {|item|
+              if item =~ /\s+\*\s+/
+                pre = Regexp.last_match.pre_match
+                post = Regexp.last_match.post_match
+                (pu.ophash ||= {})[pre] = proc {|val| val * post.to_f}
+              end
+            }
+          end
 
           self::UNITS[name] = pu
         end
@@ -33,6 +42,8 @@ module GRI
       @name = name
       @cat = cat
       @options = {}
+      @ophash = nil
+      @d_p = false
     end
 
     def set_oids names
@@ -66,6 +77,9 @@ module GRI
         if (sym_oid = SNMP::ROIDS[oid_ind])
           (conv_val_proc = dhash[:conv_val]) and
             (val = conv_val_proc.call(sym_oid, val))
+          if ophash and (pr = ophash[sym_oid])
+            val = pr.call(val)
+          end
           (wh[ind] ||= {})[sym_oid] = val
         end
       end

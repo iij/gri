@@ -54,5 +54,24 @@ module GRI
       pu.fix_workhash workhash
       ae '192.168.0.1/255.255.255.0', wh[2]['ipaddr']
     end
+
+    def test_polling_unit_ophash
+      DEFS['foo'] = {:tdb=>['foo', 'fooX * 10', 'fooY', 'fooZ']}
+      PollingUnit::UNITS.clear
+      units = PollingUnit.all_units
+      pu = units['foo']
+      ae 50, pu.ophash['fooX'].call(5).to_i
+      assert_nil pu.ophash['fooY']
+
+      wh = {}
+      SNMP.update 'fooEntry'=>'1.3.6.1.4.1.99999.1',
+        'fooX'=>'1.3.6.1.4.1.99999.1.1'
+      SNMP::ROIDS.clear
+      SNMP.new 'host'
+      enoid = BER.enc_v_oid(SNMP::OIDS['fooX'] + '.1')
+      pu.feed wh, enoid, 2, 3
+      r = wh[1]
+      ae 30, r['fooX'].to_i
+    end
   end
 end
