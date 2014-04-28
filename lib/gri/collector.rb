@@ -1,5 +1,6 @@
 #require 'gri/utils'
 require 'gri/msnmp'
+require 'gri/builtindefs'
 require 'gri/vendor'
 require 'gri/polling_unit'
 
