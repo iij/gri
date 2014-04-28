@@ -53,6 +53,20 @@ class TestCollector < Test::Unit::TestCase
     c.walk(enoid) {|enoid, tag, val|}
     ae :GETNEXT_REQ, snmp.state
   end
+
+  def test_snmp_collector_fake_snmp
+    opts = {'fake-snmp'=>File.join($test_dir, 'fake_snmp.txt')}
+    records = nil
+    c = Collector.create('snmp', 'testhost', opts) {|rs| records = rs}
+    c.attach MockLoop.new
+
+    sys = records.detect {|r| r['_key'] == 'SYS'}
+    ae 'HOSTNAME.example.com', sys['sysName']
+
+    eth0 = records.detect {|r| r['ifDescr'] == 'eth0'}
+    ae '_eth0', eth0['_key']
+    ae 1000000000, eth0['ifSpeed']
+  end
 end
 
 end
