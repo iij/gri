@@ -218,6 +218,11 @@ module GRI
             (dhash[:tdb] and dhash[:tdb].first) ||
             k.gsub(/-/, '')
           spec = (@specs[data_name.to_s] ||= {})
+          if dhash[:tdb]
+            dhash[:tdb] = dhash[:tdb].map {|item|
+              (item =~ /\s+\*\s+/) ? Regexp.last_match.pre_match : item
+            }
+          end
           [:list, :index_key, :named_index, :tdb, :ds, :rra, :prop,
             :graph, :composite, :ignore?, :exclude?, :hidden?].each {|symkey|
             spec[symkey] = dhash[symkey] if dhash[symkey]
