@@ -33,7 +33,6 @@ module GRI
       @name = name
       @cat = cat
       @options = {}
-      @d_p = false
     end
 
     def set_oids names
@@ -45,7 +44,6 @@ module GRI
 
     def feed wh, enoid, tag, val
       if (feed_proc = dhash[:feed])
-        puts "  feed_proc #{[enid, tag, val].inspect}" if @d_p
         feed_proc.call wh, enoid, tag, val
       else
         if enoid.getbyte(-2) < 128
@@ -69,10 +67,6 @@ module GRI
           (conv_val_proc = dhash[:conv_val]) and
             (val = conv_val_proc.call(sym_oid, val))
           (wh[ind] ||= {})[sym_oid] = val
-          if @d_p
-            wh[ind]['_d'] = true
-            puts "  feed #{[sym_oid, ind, tag, val].inspect}"
-          end
         end
       end
     end

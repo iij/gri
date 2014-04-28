@@ -147,7 +147,6 @@ module GRI
       end
       data = @record_keys.map {|key| record[key]}
       s = "#{time.to_i}:#{mk_update_str data}"
-      puts "  update #{@key} #{s}" if record['_d']
       @rrd.buffered_update s
 
       if (prop = @specs[:prop]) and (descr_k = prop[:description]) and

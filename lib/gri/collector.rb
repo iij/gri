@@ -164,7 +164,6 @@ module GRI
                   (prop = specs[:prop]) and (descr_k = prop[:description])
                 h[descr_k] = f_descr
               end
-              puts "  record #{h.inspect}" if h['_d']
               next if ign_proc and ign_proc.call(h)
               records.push h
             end
