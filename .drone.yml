@@ -1,0 +1,7 @@
+image: bradrydzewski/ruby:2.0.0
+env:
+  - TZ=Asia/Tokyo
+script:
+  - sudo apt-get install rrdtool
+  - bundle install
+  - bundle exec rake test
