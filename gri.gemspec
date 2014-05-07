@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require "gri/version"
 
@@ -15,7 +14,6 @@ Gem::Specification.new do |s|
 ) }
   s.require_paths = ["lib"]
 
-  # specify any dependencies here; for example:
-
+  s.add_development_dependency "msgpack"
   s.add_runtime_dependency "rack"
 end
