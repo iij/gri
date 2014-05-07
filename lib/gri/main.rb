@@ -30,9 +30,12 @@ module GRI
       GRI::Plugin.load_plugins plugin_dirs, @config
 
       log_dir = @config['log-dir'] || root_dir + '/log'
-      Dir.mkdir log_dir unless File.exist? log_dir
-      Log.init "#{log_dir}/#{optparser.program_name}.log",
-        :log_level=>@config['log-level']
+      begin
+        Dir.mkdir log_dir unless File.exist? log_dir
+        Log.init "#{log_dir}/#{optparser.program_name}.log",
+          :log_level=>@config['log-level']
+      rescue SystemCallError
+      end
 
       @config['tra-dir'] ||= root_dir + '/tra'
       @config['gra-dir'] ||= root_dir + '/gra'
