@@ -45,6 +45,7 @@ module GRI
           @loop.attach collector
         rescue SystemCallError
           Log.error "#{host}: ERROR: #{$!}"
+          puts "#{host}: ERROR: #{$!}" if $debug
           @loop.detach collector
         end
         @metrics[:run_count] += 1
