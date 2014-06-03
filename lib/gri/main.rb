@@ -26,9 +26,6 @@ module GRI
       @options.each {|k, v| @config.setvar k.to_s, v}
       root_dir = @config['root-dir'] ||= Config::ROOT_PATH
 
-      plugin_dirs = @config.getvar('plugin-dir') || [root_dir + '/plugin']
-      GRI::Plugin.load_plugins plugin_dirs, @config
-
       log_dir = @config['log-dir'] || root_dir + '/log'
       begin
         Dir.mkdir log_dir unless File.exist? log_dir
@@ -36,6 +33,9 @@ module GRI
           :log_level=>@config['log-level']
       rescue SystemCallError
       end
+
+      plugin_dirs = @config.getvar('plugin-dir') || [root_dir + '/plugin']
+      GRI::Plugin.load_plugins plugin_dirs, @config
 
       @config['tra-dir'] ||= root_dir + '/tra'
       @config['gra-dir'] ||= root_dir + '/gra'

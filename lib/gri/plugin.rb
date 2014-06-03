@@ -15,7 +15,12 @@ module GRI
       files.each {|fname|
         unless @loaded[fname]
           path = File.join dir, fname
-          require path
+          begin
+            require path
+          rescue LoadError
+            Log.error "LoadError: #{$!}"
+            puts "LoadError: #{$!}" if $debug
+          end
           @loaded[fname] = path
         end
       }
