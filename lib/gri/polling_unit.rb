@@ -87,7 +87,11 @@ module GRI
 
     def fix_workhash workhash
       if (c = dhash[:fix_workhash])
-        c.call workhash
+        if c.arity == 1
+          c.call workhash
+        elsif c.arity == 2
+          c.call workhash, @options
+        end
       end
     end
 

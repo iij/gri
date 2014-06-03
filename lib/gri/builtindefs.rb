@@ -59,13 +59,16 @@ module GRI
       :composite=>['s', 'v', 't'],
     },
     'ifMIB'=>{:cat=>'',
-      :oid=>['ifHCInOctets', 'ifHCOutOctets', 'ifHighSpeed', 'ifAlias'],
-      :fix_workhash=>proc {|wh|
+      :oid=>['ifName', 'ifHCInOctets', 'ifHCOutOctets', 'ifHighSpeed', 'ifAlias'],
+      :fix_workhash=>proc {|wh, options|
         for k, r in wh['']
           r['ifInOctets'] = r['ifHCInOctets'] if r['ifHCInOctets']
           r['ifOutOctets'] = r['ifHCOutOctets'] if r['ifHCOutOctets']
           if r['ifHighSpeed'] and r['ifHighSpeed'].to_i > 4000
             r['ifSpeed'] = r['ifHighSpeed'].to_i * 1_000_000
+          end
+          if options['ifname'] and r['ifName']
+            r['ifDescr'] = r['ifName']
           end
         end
       },
