@@ -84,7 +84,7 @@ module GRI
       :fix_workhash => lambda {|wh|
         ifrecord = wh[''] || {}
         for k, record in wh[:ipaddr]
-          a = k + '/' + record['mask']
+          a = k + '/' + (record['mask'] || '?')
           ind = record['ifIndex']
           if (r = ifrecord[ind])
             if r['ipaddr']
