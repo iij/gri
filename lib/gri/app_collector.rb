@@ -121,7 +121,7 @@ module GRI
     def get_targets_from_lines lines, config
       targets = Config.get_targets_from_lines lines
       goptions = Config.parse_options(*(config.getvar 'option'))
-      goptions.merge!(Config.parse_options(*config['O']))
+      goptions.merge!(Config.parse_options(*config.getvar('O')))
       if config['host-pat']
         hosts_re = config.getvar('host-pat').map {|h| Regexp.new h}
         targets = targets.select {|host, | hosts_re.detect {|re| re === host}}
