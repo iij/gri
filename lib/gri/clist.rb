@@ -31,7 +31,7 @@ module GRI
       dirs = scan_dir dir, service_name, section_name, graph_name
       @title = 'list'
       body = render(Cast.layout) {render template, binding}
-      [200, {'Content-type' => 'text/html'}, body]
+      [200, {'Content-type' => 'text/html'}, [body]]
     end
 
     def scan_dir dir, service_name, section_name, graph_name
