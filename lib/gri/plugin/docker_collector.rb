@@ -1,5 +1,14 @@
 if Object.const_defined? :RUBY_VERSION
 
+#GRI::DEFS.update 'docker'=>{
+#    :ds=>['inbytes.0,inoctet,DERIVE,MAX,AREA,#90f090,in,8',
+#      'outbytes.0,outoctet,DERIVE,MAX,LINE1,#0000ff,out,8',
+#    ],
+#    :list=>['Docker'],
+#    :prop=>{:name=>'_index'},
+#    :graph=>[['bps', 1000, [0, nil], /octet/]],
+#}
+
 begin
 
 require 'net/http'
@@ -17,13 +26,15 @@ module GRI
       host = @hostname || @host
       port = @options["docker-port"] || 2375
       port = port.to_i
+
+      puts "docker: #{host}:#{port}" if $debug
       Net::HTTP.start(host, port) {|http|
         res = http.get '/info'
         if Net::HTTPSuccess === res
           h = JSON.parse(res.body)
           for k in ['Containers', 'Images',
               'NEventsListener', 'NFd', 'NGoroutines']
-            record = {'_host'=>host, '_time'=>now_i,
+            record = {'_host'=>host, '_time'=>now_i, '_interval'=>@interval,
               '_key'=>"num_docker_#{k}", 'num'=>h[k],
             }
             records.push record
@@ -42,7 +53,12 @@ module GRI
                 '_key'=>"docker_#{docker_hostname}"
               }
               for mkey, mvalues in metrics
-                for k, v in mvalues
+                if mkey == 'memory' or mkey == 'cpuacct'
+                  h = hflat mvalues
+                else
+                  h = mvalues
+                end
+                for k, v in h
                   record[k] = v
                 end
               end
@@ -54,6 +70,22 @@ module GRI
 
       @cb.call records
       @loop.detach self
+    end
+
+    def hflat h
+      hh = {}
+      for k, v in h
+        if Hash === v
+          hh.update hflat(v)
+        elsif Array === v
+          v.each_with_index {|vv, ind|
+            hh["#{k}.#{ind}"] = vv
+          }
+        else
+          hh[k] = v
+        end
+      end
+      hh
     end
 
     def get_container_info http, ctn_id
