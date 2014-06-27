@@ -29,6 +29,7 @@ module GRI
     def write records
       time = Time.now.to_i
       for record in records
+        record = record.dup
         time = record.delete '_time'
         #host = record.delete '_host'
         key = record.delete '_key'
@@ -38,6 +39,8 @@ module GRI
         next if data_name == 'SYS'
         if data_name == ''
           data_name = 'interfaces'
+        elsif data_name == 'docker'
+          data_name = "docker.#{index}"
         end
         record.update :time=>time.to_i, :key=>index
         buffered_write data_name, record
