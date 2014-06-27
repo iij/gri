@@ -88,6 +88,8 @@ module GRI
         [0x42, $1.to_i]
       when /^Counter64: (\d+)/
         [0x46, $1.to_i]
+      when /^IpAddress: ([\.\d]+)/
+        [0x40, $1]
       else
         nil
       end
