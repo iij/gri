@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:centos6
 
 # cron
 RUN yum install -y cronie
@@ -13,7 +13,7 @@ RUN gem install gri --no-ri --no-rdoc
 RUN cp /usr/bin/grapher /var/www/cgi-bin/
 
 # rrdtool
-RUN yum install -y cairo gettext pango tcp_wrappers-libs libdbi
+RUN yum install -y wget cairo gettext pango tcp_wrappers-libs libdbi
 RUN yum install -y xorg-x11-fonts-Type1 ipa-gothic-fonts ipa-pgothic-fonts
 RUN (cd /tmp; wget http://pkgs.repoforge.org/rrdtool/rrdtool-1.4.7-1.el6.rfx.x86_64.rpm)
 RUN (cd /tmp; rpm --nodeps -i rrdtool-1.4.7-1.el6.rfx.x86_64.rpm)
