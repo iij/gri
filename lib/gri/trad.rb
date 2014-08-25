@@ -110,7 +110,7 @@ module GRI
       rs0 = [server_sock]
       params = {}
       status = :start
-      while true and status != :stop
+      while status != :stop
         if status == :shutdown and rs0.size == 1 and rs0[0].kind_of?(TCPServer)
           Log.info "shutting down"
           server_sock.close
