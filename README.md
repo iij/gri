@@ -130,3 +130,11 @@ font        DEFAULT:0:IPAPGothic
 * option-if-host *PAT* *option*
 
   Option to be added to the default when the host name matches PAT (regexp). Multiple options can be specified.
+
+### Operations
+
+ * trad: in-service acl-permit update
+   * send SIGUSR1 to trad
+ * trad: graceful shutdown
+   * send SIGWINCH to trad
+
