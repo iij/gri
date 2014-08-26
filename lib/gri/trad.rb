@@ -17,6 +17,7 @@ module GRI
       acls.push(/^127\.0\.0\.1$/)
       acls.push(/^::ffff:127\.0\.0\.1$/)
       acls.push(/^::1$/)
+      puts "acls: #{acls.join(',')}" if $debug
       acls
     end
 
@@ -79,6 +80,7 @@ module GRI
     end
 
     def run options={}
+      status = :init
       optparser = optparse options
       optparser.parse!
       Process.daemon true if options[:daemonize] and !$debug
@@ -91,12 +93,30 @@ module GRI
       Dir.mkdir log_dir unless File.exist? log_dir
       Log.init "#{log_dir}/#{optparser.program_name}.log"
 
+      Signal.trap(:USR1){
+        Log.info "reloading acls"
+        config = GRI::Config.init config_path
+        @acls = load_acls config
+      }
+
+      Signal.trap(:WINCH){
+        Log.info "going to shutdown"
+        status = :shutdown
+      }
+
       bind_address = options[:bind_address] || '0.0.0.0'
       port = options[:port] || 7079
       server_sock = TCPServer.new bind_address, port
       rs0 = [server_sock]
       params = {}
-      while true
+      status = :start
+      while status != :stop
+        if status == :shutdown and rs0.size == 1 and rs0[0].kind_of?(TCPServer)
+          Log.info "shutting down"
+          server_sock.close
+          status = :stop
+          next
+        end
         next unless (a = IO.select(rs0, nil, nil, 1))
         rs, = a
         for io in rs
@@ -105,7 +125,11 @@ module GRI
               sock = server_sock.accept
               peername = sock.peeraddr[2]
               peeraddr = sock.peeraddr[3]
-              if allowed?(@acls, peeraddr)
+              if status == :shutdown
+                sock.close
+                Log.info "#{peeraddr}: reject due to shutting down"
+                next
+              elsif allowed?(@acls, peeraddr)
                 puts "#{peeraddr}: accespt #{sock.object_id}" if $debug
               else
                 sock.close
@@ -146,6 +170,9 @@ module GRI
           end
         end
       end
+
+      Log.info "stopped"
+      exit 0
     end
 
     def optparse opts
