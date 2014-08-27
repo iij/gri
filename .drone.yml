@@ -1,7 +1,8 @@
-image: bradrydzewski/ruby:2.0.0
+image: drone:gri
 env:
   - TZ=Asia/Tokyo
+  - HOME=/
 script:
-  - sudo apt-get install rrdtool
+  - source /etc/profile.d/rbenv.sh; rbenv global 2.1
   - bundle install
   - bundle exec rake test
