@@ -25,17 +25,17 @@ module Fluent
 class GriOutput < BufferedOutput
   Plugin.register_output('gri', self)
 
-  config_param :gra_dir, :string, :default=>'/usr/local/gri/gra'
-
-  def configure conf
-    super
-  end
+  config_param :config_path, :string, :default=>'/usr/local/gri/gri.conf'
+  config_param :gra_dir, :string, :default=>nil
 
   def start
     super
     #::Log.init '/tmp/fluent.log'
-    GRI::Plugin.load_plugins []
-    GRI::Config.init
+    GRI::Config.init @config_path
+    root_dir = GRI::Config['root-dir'] ||= GRI::Config::ROOT_PATH
+    plugin_dirs = GRI::Config.getvar('plugin-dir') || [root_dir + '/plugin']
+    GRI::Plugin.load_plugins plugin_dirs
+    @gra_dir ||= GRI::Config['gra-dir'] || root_dir + '/gra'
   end
 
   def format tag, time, record
