@@ -41,8 +41,10 @@ module GRI
       now = Time.now.to_i
       hrecords = {}
       updaters = {}
+      hosts = {}
       for record in records
         if (host = record['_host']) and (key = record['_key'])
+          hosts[host] = true
           if key == 'SYS'
             @sysinfos[host] = record
           else
@@ -77,6 +79,9 @@ module GRI
         Utils.update_ltsv_file path, '_key', h
       }
       updaters.each {|k, u| u.close}
+      hosts.each {|host,|
+        @sysinfos[host] ||= {'_host'=>host.dup, '_time'=>now, '_mtime'=>now}
+      }
     end
 
     def finalize
