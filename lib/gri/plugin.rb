@@ -17,8 +17,9 @@ module GRI
           path = File.join dir, fname
           begin
             require path
+            Log.debug "load plugin: '#{path}'"
           rescue LoadError
-            Log.error "LoadError: #{$!}"
+            Log.debug "LoadError: #{$!}"
             puts "LoadError: #{$!}" if $debug
           end
           @loaded[fname] = path
