@@ -36,7 +36,9 @@ module GRI
       if File.exist? path
         values = LTSV.load_from_file path
         nvalues = values.inject({}) {|h, v| h[v[key]] = v; h}
-        nvalues.merge! other
+        for k in other.keys
+          nvalues[k] ? nvalues[k].merge!(other[k]) : (nvalues[k] = other[k])
+        end
       else
         nvalues = other
       end
