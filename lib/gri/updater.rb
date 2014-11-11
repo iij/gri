@@ -130,6 +130,7 @@ module GRI
       unless @rrd
         data_name = options[:data_name]
         @specs = DEFS.get_specs data_name
+        Log.debug "update host=#{options[:host]} data=#{data_name}"
         return unless @specs # unknown data_name
         return unless @specs[:ds]
         #if (index_key = (@specs[:index_key] || @specs[:named_index]) and
@@ -147,6 +148,7 @@ module GRI
       end
       data = @record_keys.map {|key| record[key]}
       s = "#{time.to_i}:#{mk_update_str data}"
+      Log.debug "update key=#{@key} rrd data=#{s}"
       @rrd.buffered_update s
 
       if (prop = @specs[:prop]) and (descr_k = prop[:description]) and
