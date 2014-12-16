@@ -5,8 +5,12 @@ module GRI
     module_function
 
     def load_records dir
-      values = LTSV.load_from_file dir + '/.records.txt'
-      values.inject({}) {|h, v| h[v['_key']] = v; h}
+      if File.exist?(path = dir + '/.records.txt')
+        values = LTSV.load_from_file path
+        values.inject({}) {|h, v| h[v['_key']] = v; h}
+      else
+        nil
+      end
     end
 
     def search_records dirs, host
