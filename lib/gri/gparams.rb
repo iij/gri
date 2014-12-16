@@ -27,9 +27,8 @@ module GRI
     end
 
     def update hash
-      hash.each {|key, value|
-        @params[key] = [value]
-      }
+      hash.each {|key, value| @params[key] = [value]}
+      self
     end
 
     def merge cgi_params

@@ -22,11 +22,11 @@ class TestGraph < Test::Unit::TestCase
     gra_dirs = [@root_dir + '/gra']
     rs = ['testhost__eth0']
     graph = Graph.new :dirs=>gra_dirs
-    params = {}
+    params = GParams.new
     res = graph.mk_graph_title rs, params
     assert_nil res
 
-    params = {'p'=>'t'}
+    params.update 'p'=>'t'
     res = graph.mk_graph_title rs, params
     ae '"testhost eth0 testdescr"', res
   end

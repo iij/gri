@@ -13,16 +13,24 @@ class TestPage < Test::Unit::TestCase
 
   def test_page_mk_page_title
     rs = ['testhost__eth0']
-    res = @page.mk_page_title([@root_dir + '/gra'], rs, {})
+    params = GParams.new
+    res = @page.mk_page_title([@root_dir + '/gra'], rs, params)
     ae 3, res.size
     ae 'testdescr', res[0]
     assert_match(/__eth0/, res[1])
     assert_match(/ eth0/, res[2])
+
+    rs = []
+    params.update 'grp'=>'foo', 'tag'=>'foo_bar'
+    res = @page.mk_page_title([@root_dir + '/gra'], rs, params)
+    ae 3, res.size
+    ae 'foo_bar', res[0]
+    ae 'foo_bar', res[1]
   end
 
   def test_page_mk_param_str
     rs = ['r0.example.com', 'r 1?']
-    params = {}
+    params = GParams.new
     assert_match /\br=r\+1%3F/, @page.mk_param_str(0, 0, rs, nil, params)
   end
 
@@ -30,7 +38,7 @@ class TestPage < Test::Unit::TestCase
     stime = Time.local(2013,10,1)
     etime = stime + 24*3600
     rs = ['testhost__eth0']
-    params = {'p'=>'s'}
+    params = GParams.new.update 'p'=>'s'
     res = @page.mk_graph_tag stime, etime, rs, params
     ae 2, res.scan(/inoctet/).size
     ae 2, res.scan(/indiscard/).size
