@@ -163,13 +163,24 @@ module GRI
       :hidden? => proc {|record| record['hrStorageDescr'] =~ /devicemapper/},
       :tdb=>['hrStorage', 'hrStorageDescr', 'hrStorageSize', 'hrStorageUsed'],
       :fix_workhash=>lambda {|wh|
+        if (th = wh[:hrStorageTotalHack])
+          ph = Hash[*(th.map {|k, v|
+                        [v['dskPath'],
+                          (v['dskTotalHigh'].to_i * 4294967296 +
+                           v['dskTotalLow'].to_i) * 1024]
+                      }).flatten]
+        end
         if (h = wh[:hrStorage])
           h.reject! {|k, v|
             v['hrStorageType'] != "+\x06\x01\x02\x01\x19\x02\x01\x04"}
           h.each {|k, v|
             u = v['hrStorageAllocationUnits'].to_i
             v.delete 'hrStorageType'
-            v['hrStorageSize'] = v['hrStorageSize'].to_i * u
+            if ph and (t = ph[v['hrStorageDescr']])
+              v['hrStorageSize'] = t
+            else
+              v['hrStorageSize'] = v['hrStorageSize'].to_i * u
+            end
             v['hrStorageUsed'] = v['hrStorageUsed'].to_i * u
           }
         end
@@ -180,6 +191,10 @@ module GRI
       :list=>['Storage Used', '%N, %1024L / %1024U\r'],
       :graph=>[['storage used', 1024]],
       :composite=>['s', 'v', 't'],
+    },
+
+    'hrStorageTotalHack'=>{
+      :oid=>['dskPath', 'dskTotalLow', 'dskTotalHigh'],
     },
 
     'hrSWRunPerf'=>{
