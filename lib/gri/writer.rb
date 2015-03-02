@@ -8,7 +8,12 @@ module GRI
       if (klass = TYPES[wtype])
         options.select {|k, v| String === k}.each {|k, v|
           options[k.gsub('-', '_').intern] = v}
-        klass.new options
+        begin
+          klass.new options
+        rescue
+          Log.error "Writer.create error: #{$!}"
+          nil
+        end
       end
     end
 
