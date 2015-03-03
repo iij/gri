@@ -369,7 +369,6 @@ class SNMP
     'hrSystemNumUsers'=>'1.3.6.1.2.1.25.1.5.0',
     'hrSystemProcesses'=>'1.3.6.1.2.1.25.1.6.0',
     'hrSystemMaxProcesses'=>'1.3.6.1.2.1.25.1.7.0',
-    'hrSystem'=>'1.3.6.1.2.1.25.1',
     'hrStorage'=>'1.3.6.1.2.1.25.2',
     'hrStorageTypes'=>'1.3.6.1.2.1.25.2.1',
     'hrStorageFixedDisk'=>'1.3.6.1.2.1.25.2.1.4',
