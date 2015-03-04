@@ -9,6 +9,13 @@ module GRI
       :graph=>[['', 0]],
       :composite=>['', 's', 'v', 't'],
     },
+    'counter'=>{
+      :ds=>['num,num,DERIVE,,,,:index'],
+      :prop=>{:name=>'_index', :description=>'description'},
+      :list=>['Counter', '%N'],
+      :graph=>[['', 0, [0, nil]]],
+      :composite=>['', 's', 'v', 't'],
+    },
     'grimetrics'=>{:ds=>['number,number,GAUGE'],
       :prop=>{:name=>'_index'},
       :list_text=>['grimetrics', '%N,%L\r'],
