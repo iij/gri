@@ -1,3 +1,3 @@
 module GRI
-  VERSION = "10.0.7.1"
+  VERSION = "10.0.8"
 end
