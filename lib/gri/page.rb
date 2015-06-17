@@ -3,6 +3,7 @@ require 'gri/builtindefs'
 require 'gri/utils'
 require 'gri/request'
 require 'gri/format_helper'
+require 'gri/blank'
 
 module GRI
   class Page
@@ -15,10 +16,15 @@ module GRI
 
     def mk_page_title dirs, rs, params
       jstr = (params['p'] == 't' or params['p'] == 'v') ? ', ' : ' + '
-      hosthash = {}
       descrs = []
       headlegend = nil
 
+      if (tags = params.getvar('tag'))
+        title = tags.compact.join jstr
+        return title, title, headlegend
+      end
+
+      hosthash = {}
       for rname in rs
         host, key = rname.split('_', 2)
         hosthash[host] = true
@@ -52,7 +58,7 @@ module GRI
           descr
         end
       }.join(jstr)
-      body_title = descrs.collect {|url, xhost, descr|
+      body_title = descrs.map {|url, xhost, descr|
         if xhost and hosthash.size > 1
           "<a href=\"#{h url}\">#{h xhost}:#{h descr}</a>"
         else
@@ -66,6 +72,7 @@ module GRI
     def mk_param_str stime, etime, rs, ds, params
       res = rs.map {|r| "r=#{u r}"}
       res << "grp=#{u params['grp']}" if params['grp']
+      (tags = params.getvar('tag')) && tags.each {|tag| res << "tag=#{u tag}"}
       res << "stime=#{stime.to_i}"
       res << "etime=#{etime.to_i}" if etime.to_i.nonzero?
       res << "z=#{u params['z']}"
@@ -78,9 +85,15 @@ module GRI
 
     def mk_graph_tag stime, etime, rs, params
       if params['p'] == 't'
-        rs.map {|rname|
-          mk_graph_tag_r stime, etime, [rname], params
-        }.join("\n")
+        if (tags = params.getvar 'tag')
+          tags.map {|tag|
+            mk_graph_tag_r stime, etime, [], params
+          }.join("\n")
+        else
+          rs.map {|rname|
+            mk_graph_tag_r stime, etime, [rname], params
+          }.join("\n")
+        end
       else
         mk_graph_tag_r stime, etime, rs, params
       end
@@ -160,10 +173,18 @@ module GRI
       cs = stime.strftime '%Y-%m-%d %H:%M:%S'
       ce = etime.strftime '%Y-%m-%d %H:%M:%S'
 
-      r = params['r'] || ''
-      host, @data_name, index = parse_host_key r
-      rs = params.getvar 'r'
+      if (tags = params.getvar('tag')) and (grp = params['grp'])
+        gra_dir, = @options[:dirs]
+        rrdpaths = tags.inject([]) {|a, tag|
+          a += Dir.glob("#{gra_dir}/#{grp}/#{tag}/*.rrd")
+        }
+        r = File.basename rrdpaths.first
+      else
+        r = params['r'] || ''
+      end
+      host, @data_name, = parse_host_key r
 
+      rs = params.getvar('r') || []
       @title, body_title, headlegend =
         mk_page_title @options[:dirs], rs, params
 
@@ -190,6 +211,7 @@ module GRI
 <form enctype="application/x-www-form-urlencoded" method="get"
  action="<%= url_to '?' %>">
 <% rs.each {|r| -%><%= hidden 'r', r %><% } -%>
+<% tags and tags.each {|tag| -%><%= hidden 'tag', tag %><% } -%>
 <% if params['grp'] then %><%= hidden 'grp', params['grp'] %><% end %>
 <% tzs = TZS -%>
 <% (tzs.assoc(params['tz']) || tzs[0])[2] = true -%>
@@ -210,7 +232,7 @@ Graph size: <%= popup_menu('z', nil, *zs) %>
 <% (tms.assoc(params['tm']) || tms[1])[2] = true -%>
 term: <%= popup_menu('tm', nil, *tms) %>
 <br/>
-<% if rs.size > 1 -%>
+<% if rs.size > 1 or grp -%>
 <% c_ary = [['', 'sum'], ['s', 'stack'], ['v', 'overlay'], ['t', 'tile']] -%>
 <% (c_ary.assoc(params['p']) || c_ary[0])[2] = true -%>
 Composite type: <%= popup_menu('p', nil, *c_ary) %><br/>
