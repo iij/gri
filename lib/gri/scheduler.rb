@@ -25,6 +25,7 @@ module GRI
 
     def process1 col_type, host, options
       return if Config['nop']
+      return if col_type == 'fluentd'
       collector = Collector.create(col_type, host, options,
                                    @fake_descr_hash) {|records|
         for writer in @writers
