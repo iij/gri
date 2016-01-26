@@ -99,6 +99,7 @@ module GRI
         if $debug
           puts "snmp: #{host} (#{vendor.name}): #{sysinfo['sysDescr']}"
           puts vendor.options.inspect
+          printf "  elapsed %f sec\n", Time.now - @attached_at
         end
 
         @snmp.version = vendor.options['ver'] if vendor.options['ver']
@@ -106,6 +107,7 @@ module GRI
         punits_d = punits.dup
         @workhash = punits.inject({}) {|h, pu| h[pu.cat] = {}; h}
         poll1(punits) {
+          printf "  elapsed %f sec\n", Time.now - @attached_at if $debug
           if !options.has_key?('SYS') or options['SYS']
             sysinfo.delete 'sysObjectID'
             records = [sysinfo]
@@ -168,8 +170,10 @@ module GRI
               records.push h
             end
           end
+          printf "  elapsed %f sec\n", Time.now - @attached_at if $debug
           @cb.call records
           @loop.detach self
+          printf "  elapsed %f sec\n", Time.now - @attached_at if $debug
         }
       }
     end
@@ -190,8 +194,16 @@ module GRI
         pu = punits.shift
         @get_oid_buf = []
         oids = pu.oids.dup
-        puts "  poll #{host} #{pu.name}" if $debug
-        walk1(pu, oids) {poll1 punits, &cb}
+        if $debug
+          t = Time.now
+          puts "  poll #{host} #{pu.name}" if $debug['walk']
+        end
+        walk1(pu, oids) {
+          if $debug and !$debug['walk']
+            printf "  poll #{host} #{pu.name} (%f sec)\n", Time.now - t
+          end
+          poll1 punits, &cb
+        }
       end
     end
 

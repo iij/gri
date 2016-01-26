@@ -29,6 +29,7 @@ module GRI
       collector = Collector.create(col_type, host, options,
                                    @fake_descr_hash) {|records|
         for writer in @writers
+          puts "  writer #{writer.class}" if $debug
           writer.write records
         end
         @metrics[:record_count] += records.size
