@@ -59,6 +59,7 @@ module GRI
         writer = Writer.create 'rrd', wopts
         app.writers.push writer
       end
+      app.writers.clear if @options['reset-writers']
       if @options['writers']
         for w in @options['writers']
           writer = Writer.create w, @config.to_h
@@ -103,6 +104,7 @@ module GRI
       op.on('--rrdupdater', '--updater') {opts['updater'] = true}
       op.on('--single') {opts['para'] = false}
       op.on('--tra=URL') {|arg| opts['tra'] = arg}
+      op.on('--reset-writers') {opts['reset-writers'] = true}
 
       op.on('-c COMMUNITY') {|arg| opts['community'] = arg}
       op.on('-v VER') {|arg| opts['version'] = arg}
