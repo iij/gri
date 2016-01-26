@@ -30,7 +30,8 @@ class TestFormatHelper < Test::Unit::TestCase
   def test_format_helper_mk_query
     ae '?a=1', mk_query(:a=>1)
     assert_match /\bb=a\+%26\b/, mk_query(:a=>1, :b=>'a &')
-    assert_not_match /\bc=/, mk_query(:c=>nil)
+    #assert_not_match /\bc=/, mk_query(:c=>nil)
+    assert(/\bc=/ !~ mk_query(:c=>nil))
   end
 
   def test_format_helper_td
@@ -44,8 +45,10 @@ class TestFormatHelper < Test::Unit::TestCase
   end
 
   def test_format_helper_text_field
-    ae '<input type="text" name="text" value="aaa" size="40"/>',
-      text_field('text', 'aaa', 40, nil, nil)
+    t = text_field('text', 'aaa', 40, nil, nil)
+    s = t.scan(/\b(\w+="[^\"]+")/).flatten.sort
+    assert_equal ['name="text"', 'size="40"', 'type="text"', 'value="aaa"'], s
+    assert_match /<input\s+.*\/>/, t #/
   end
 
   def test_format_helper_popup_menu
