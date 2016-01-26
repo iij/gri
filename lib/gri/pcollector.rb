@@ -66,7 +66,7 @@ module GRI
           pkeys.shift
           pts += ptargets[t]
           while (n = pts.shift)
-            timeout(waittime) {sock = server_sock.accept}
+            Timeout.timeout(waittime) {sock = server_sock.accept}
             if (res = IO.select(nil, [sock], nil, 20))
               thost = targets[n].first
               sock.puts "#{n} #{thost}"
