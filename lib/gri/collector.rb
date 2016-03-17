@@ -302,8 +302,14 @@ module GRI
       elsif @preq
         Log.warn "#{host}: retry #{@retry_count}"
         @on_retry.call if @on_retry
-        @buffers.push @preq.last
-        loop.watch @snmp.sock, :w, @tout, self
+        if (s = @snmp.make_req(@snmp.state, @preq.last))
+          @buffers.push s
+          loop.watch @snmp.sock, :w, @tout, self
+        else
+          @loop.detach self
+          @on_error.call if @on_error
+          Log.error "#{host}: cannot retry: #{@retry_count}"
+        end
       else
         @loop.detach self
         @on_error.call if @on_error
