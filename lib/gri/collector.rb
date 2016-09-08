@@ -262,10 +262,10 @@ module GRI
       @snmp.connect unless @snmp.sock
       @snmp.walk_start(enoid) {|*res| @results.push res}
       send_req enoid
-    rescue SocketError
+    rescue SocketError => e
       @loop.detach self
       @on_error.call if @on_error
-      Log.error "#{host}: error"
+      Log.error "#{host}: error: #{e.to_s}"
     end
 
     def get varbind, &cb
@@ -275,10 +275,10 @@ module GRI
       @snmp.connect unless @snmp.sock
       @snmp.get_start(varbind) {|*res| @results.push res}
       send_req varbind
-    rescue SocketError
+    rescue SocketError => e
       @loop.detach self
       @on_error.call if @on_error
-      Log.error "#{host}: error"
+      Log.error "#{host}: error: #{e.to_s}"
     end
 
     def send_req arg
