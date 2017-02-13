@@ -332,8 +332,8 @@ module GRI
         @snmp.state = :SUCCESS if @snmp.state == :GET_REQ
       end
       if @snmp.state == :SUCCESS
-        @poll_cb.call @results
         @preq = nil
+        @poll_cb.call @results
       elsif @snmp.state != :IDLE
         send_req arg if arg
       end
