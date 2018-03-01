@@ -1,6 +1,6 @@
 # coding: us-ascii
 
-class Fixnum
+class Integer
   def to_msgpack
     if (self >= -32 and self <= 127)
       [self].pack('c')
@@ -9,12 +9,6 @@ class Fixnum
     else
       "\xcf"+[(self>>32), (self&0xffffffff)].pack('N2')
     end
-  end
-end
-
-class Bignum
-  def to_msgpack
-    "\xcf"+[(self>>32), (self&0xffffffff)].pack('N2')
   end
 end
 
