@@ -38,7 +38,8 @@ module GRI
         #puts "#{collector.class} (#{col_type}): #{host}" if $debug
         interval = (options['interval'] || 300).to_i
         collector.interval = interval
-        collector.timeout = [90, interval].min
+        timeout = (options['timeout'] || Config['timeout'] || 90).to_i
+        collector.timeout = [timeout, interval].min
         collector.on_error {@metrics[:error_count] += 1}
         collector.on_retry {@metrics[:retry_count] += 1}
         Log.info "[#{$$}] #{host}: collect #{col_type}"
