@@ -71,6 +71,9 @@ module GRI
         for k, r in wh['']
           r['ifInOctets'] = r['ifHCInOctets'] if r['ifHCInOctets']
           r['ifOutOctets'] = r['ifHCOutOctets'] if r['ifHCOutOctets']
+          if options['ifhighspeed']
+            r['ifHighSpeed'] = options['ifhighspeed'].to_i
+          end
           if r['ifHighSpeed'] and r['ifHighSpeed'].to_i > 4000
             r['ifSpeed'] = r['ifHighSpeed'].to_i * 1_000_000
           end
